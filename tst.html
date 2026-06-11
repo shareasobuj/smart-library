@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>স্মার্ট লাইব্রেরি</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f6f9;
+}
+
+header{
+background:#0d6efd;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+.container{
+width:95%;
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,.1);
+margin-bottom:20px;
+}
+
+h2{
+margin-bottom:15px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ddd;
+border-radius:5px;
+}
+
+button{
+padding:12px 20px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+font-size:16px;
+}
+
+.add-btn{
+background:#198754;
+color:white;
+}
+
+.delete-btn{
+background:red;
+color:white;
+padding:8px 15px;
+}
+
+.book-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+}
+
+.book-card{
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.book-card h3{
+margin-bottom:10px;
+color:#0d6efd;
+}
+
+.book-card p{
+margin:5px 0;
+}
+
+.stats{
+font-size:20px;
+font-weight:bold;
+color:#198754;
+}
+
+footer{
+text-align:center;
+padding:20px;
+background:#0d6efd;
+color:white;
+margin-top:20px;
+}
+
+@media(max-width:600px){
+button{
+width:100%;
+}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>📚 স্মার্ট লাইব্রেরি ম্যানেজমেন্ট</h1>
+<p>Dynamic & Responsive Library Website</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h2>➕ নতুন বই যোগ করুন</h2>
+
+<input type="text" id="title" placeholder="বইয়ের নাম">
+
+<input type="text" id="author" placeholder="লেখকের নাম">
+
+<input type="text" id="category" placeholder="বিভাগ">
+
+<button class="add-btn" onclick="addBook()">বই যোগ করুন</button>
+</div>
+
+<div class="card">
+<h2>🔍 বই সার্চ করুন</h2>
+
+<input type="text" id="search" placeholder="বইয়ের নাম লিখুন..." onkeyup="displayBooks()">
+</div>
+
+<div class="card">
+<p class="stats">
+মোট বই: <span id="totalBooks">0</span>
+</p>
+</div>
+
+<div class="book-grid" id="bookList"></div>
+
+</div>
+
+<footer>
+© 2026 Smart Library System
+</footer>
+
+<script>
+
+let books = JSON.parse(localStorage.getItem("books")) || [];
+
+function saveBooks(){
+localStorage.setItem("books",JSON.stringify(books));
+}
+
+function addBook(){
+
+let title=document.getElementById("title").value.trim();
+let author=document.getElementById("author").value.trim();
+let category=document.getElementById("category").value.trim();
+
+if(title=="" || author=="" || category==""){
+alert("সব তথ্য পূরণ করুন");
+return;
+}
+
+let book={
+id:Date.now(),
+title,
+author,
+category
+};
+
+books.push(book);
+
+saveBooks();
+displayBooks();
+
+document.getElementById("title").value="";
+document.getElementById("author").value="";
+document.getElementById("category").value="";
+
+alert("বই সফলভাবে যোগ হয়েছে");
+}
+
+function deleteBook(id){
+
+if(confirm("বইটি ডিলিট করতে চান?")){
+
+books=books.filter(book=>book.id!==id);
+
+saveBooks();
+displayBooks();
+
+}
+
+}
+
+function displayBooks(){
+
+let search=document.getElementById("search").value.toLowerCase();
+
+let filtered=books.filter(book=>
+book.title.toLowerCase().includes(search)
+);
+
+let output="";
+
+filtered.forEach(book=>{
+
+output+=`
+<div class="book-card">
+
+<h3>${book.title}</h3>
+
+<p><strong>লেখক:</strong> ${book.author}</p>
+
+<p><strong>বিভাগ:</strong> ${book.category}</p>
+
+<button class="delete-btn"
+onclick="deleteBook(${book.id})">
+ডিলিট
+</button>
+
+</div>
+`;
+
+});
+
+document.getElementById("bookList").innerHTML=output;
+
+document.getElementById("totalBooks").innerText=books.length;
+
+}
+
+displayBooks();
+
+</script>
+
+</body>
+</html>
